@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id              Int         @id @default(autoincrement())
+
+  fullName        String
+  username        String      @unique
+  email           String      @unique
+  password        String
+
+  profileImage    String?
+
+  role            Role        @default(USER)
+
+  isActive        Boolean     @default(true)
+
+  reports         Report[]
+  messages        Message[]
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([email])
+  @@index([username])
+
+  @@map("users")
+}
+
+model Category {
+  id              Int         @id @default(autoincrement())
+
+  name            String      @unique
+  slug            String      @unique
+
+  description     String?
+
+  reports         Report[]
+
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@map("categories")
+}
+
+model Report {
+  id              Int               @id @default(autoincrement())
+
+  title           String
+  slug            String            @unique
+
+  description     String            @db.Text
+
+  status          ReportStatus      @default(PENDING)
+
+  priority        Priority          @default(MEDIUM)
+
+  supportType     SupportType       @default(BOT)
+
+  schoolName      String?
+  location        String?
+
+  views           Int               @default(0)
+
+  adminResponse   String?           @db.Text
+
+  userId          Int
+  categoryId      Int
+
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  category        Category          @relation(fields: [categoryId], references: [id])
+
+  messages        Message[]
+  images          ReportImage[]
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([userId])
+  @@index([categoryId])
+  @@index([status])
+  @@index([supportType])
+
+  @@map("reports")
+}
+
+model ReportImage {
+  id              Int         @id @default(autoincrement())
+
+  imageUrl        String
+
+  reportId        Int
+
+  report          Report      @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime    @default(now())
+
+  @@index([reportId])
+
+  @@map("report_images")
+}
+
+model Message {
+  id              Int             @id @default(autoincrement())
+
+  message         String          @db.Text
+
+  senderType      SenderType
+
+  isInternal      Boolean         @default(false)
+
+  userId          Int?
+  reportId        Int
+
+  user            User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  report          Report          @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([userId])
+  @@index([reportId])
+  @@index([senderType])
+
+  @@map("messages")
+}
+
+enum Role {
+  USER
+  STAFF
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  IN_PROGRESS
+  RESOLVED
+  REJECTED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum SupportType {
+  BOT
+  HUMAN
+}
+
+enum SenderType {
+  USER
+  BOT
+  STAFF
+  ADMIN
+}
