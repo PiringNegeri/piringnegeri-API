@@ -11,7 +11,5 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-console.log("Supabase Connected!", supabaseUrl);
-
 
 export default supabase;
