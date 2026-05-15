@@ -1,6 +1,6 @@
 import prisma from "../lib/prisma.js";
 
-import { createMessageService } from "../services/message.service.js";
+import { createMessageService } from "../services/messageService.js";
 
 export async function getMessages(req,res) {
   try {

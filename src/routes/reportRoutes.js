@@ -1,7 +1,7 @@
 import express from "express";
 
-import { createReport, getReports, getReportBySlug, deleteReport, requestHumanSupport } from "../controllers/reportController.js";
-import { verifyToken } from "../middleware/auth.middleware.js";
+import { createReport, getReports, getReportBySlug, deleteReport, requestHumanSupport } from "../controllers/reportControllers.js";
+import { verifyToken } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 router.get("/", getReports);
